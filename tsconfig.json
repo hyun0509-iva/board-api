@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "lib": ["es5", "es6"],
+    "target": "es2017",
+    "moduleResolution": "node",
+    "module": "CommonJS",
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "paths": {
+      "apis/*": ["src/apis/*"],
+      "interfaces/*": ["src/interfaces/*"],
+    },
+    "typeRoots" : ["./@types", "./node_modules/@types"],
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "sourceMap": true
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": ["node_modules"],
+}
