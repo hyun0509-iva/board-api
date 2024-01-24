@@ -1,11 +1,12 @@
 import { NextFunction, Request, Response, Router } from "express";
 import PostModel from "./board.model";
-import PostDto from "./dto/board.dto";
 import NotFoundException from "../../exceptions/notFoundException";
 import { Controller } from "interfaces/controller";
+import PostDto from "./dto/board.dto";
+import BoardService from "./board.service";
 
 class BoardController implements Controller {
-  private Post = PostModel;
+  private BoardService = new BoardService();
   public path: string = "/posts";
   public router: Router = Router();
 
@@ -27,10 +28,10 @@ class BoardController implements Controller {
     next: NextFunction
   ) => {
     try {
-      const data: PostDto = req.body;
-      const newPost = new this.Post(data);
-      await newPost.save();
-      res.send({ isOk: true, msg: "게시글이 저장되었습니다.", result: newPost });
+      const postData: PostDto = req.body;
+      const result = await this.BoardService.createPost(postData);
+      console.log({ ctrl: result });
+      res.send({ isOk: true, msg: "게시글이 저장되었습니다.", result });
     } catch (error) {
       next(error);
     }
@@ -42,11 +43,11 @@ class BoardController implements Controller {
     next: NextFunction
   ) => {
     try {
-      const post = await this.Post.find();
-      if (!post) {
-        next(new NotFoundException());
+      const result = await this.BoardService.getAllPosts();
+      if (!result) {
+        return next(new NotFoundException());
       }
-      res.status(200).json({isOk: true, result: post});
+      res.status(200).json({ isOk: true, result });
     } catch (error) {
       next(error);
     }
@@ -59,11 +60,12 @@ class BoardController implements Controller {
   ) => {
     try {
       const { id } = req.params;
-      const post = await this.Post.findById(id);
-      if (!post) {
-        next(new NotFoundException());
+      const result = await this.BoardService.getPostById(id);
+      console.log({ctrl: result})
+      if (!result) {
+        return next(new NotFoundException());
       }
-      res.status(200).json({isOk: true, result: post});
+      res.status(200).json({ isOk: true, result });
     } catch (error) {
       next(new NotFoundException());
     }
@@ -75,16 +77,13 @@ class BoardController implements Controller {
   ) => {
     try {
       const { id } = req.params;
-      const data: PostDto = req.body;
-      const post = await this.Post.findById(id);
-      console.log(post)
-      if (!post) {
-        next(new NotFoundException());
+      const postData: PostDto = req.body;
+      const result = await this.BoardService.updatePost(id, postData);
+      if (!result) {
+        return next(new NotFoundException());
       }
-      await post.updateOne({ $set: data });
-      res.status(200).json({isOk: true, msg: "게시글이 수정되었습니다."});
+      res.status(200).json({ isOk: true, msg: "게시글이 수정되었습니다." });
     } catch (error) {
-      console.log('error', error)
       next(error);
     }
   };
@@ -95,12 +94,14 @@ class BoardController implements Controller {
   ) => {
     try {
       const { id } = req.params;
-      const post = await this.Post.findById(id);
-      if (!post) {
-        next(new NotFoundException());
+      const result = await this.BoardService.deletePost(id);
+      console.log({ctrl: result})
+      if (!result) {
+        return next(new NotFoundException());
       }
-      const result = await post.deleteOne();
-      res.status(200).json({isOk: true, msg: "게시글이 삭제되었습니다.", result});
+      res
+        .status(200)
+        .json({ isOk: true, msg: "게시글이 삭제되었습니다.", result });
     } catch (error) {
       next(error);
     }
