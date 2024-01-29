@@ -1,4 +1,4 @@
-import HttpException from "exceptions/httpException";
+import HttpException from "@/exceptions/httpException";
 import { Request, Response, NextFunction } from "express";
 
 const errorMiddleware = (

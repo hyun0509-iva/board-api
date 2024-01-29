@@ -1,8 +1,8 @@
 import express, { Application, Request, Response } from "express";
-import { Controller } from "interfaces/controller";
+import morgan from "morgan";
 import mongoose from "mongoose";
 import errorMiddleware from "./middleware/error.middleware";
-import morgan from "morgan";
+import { Controller } from './interfaces/controller';
 
 class App {
   app: Application;

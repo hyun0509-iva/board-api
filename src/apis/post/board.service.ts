@@ -1,39 +1,43 @@
-import BoardRepository from "./board.repository";
+import PostModel from "./board.model";
 import CreatePostDto from "./dto/board.dto";
 import IPost from "./interface/board.interface";
 
 class BoardService {
-  BoardRepository = new BoardRepository();
-  constructor() {}
+  private Post = PostModel;
 
   /* 게시글 추가 */
   createPost = async (data: CreatePostDto) => {
-    const result = this.BoardRepository.createPost(data);
+    const newPost = new this.Post(data);
+    const result = await newPost.save();
     console.log({ createPost: result });
     return result;
   };
 
   /* 모든 게시글 조회 */
   getAllPosts = async () => {
-    const result = await this.BoardRepository.getAllPosts();
-    return result;
+    const posts = await this.Post.find();
+    return posts;
   };
 
   /* 게시글 상세 조회 */
   getPostById = async (id: string) => {
-    const result = await this.BoardRepository.getPostById(id);
+    const result = await this.Post.findById(id);
     return result;
   };
 
   /* 게시글 수정 */
   updatePost = async (id: string, data: IPost) => {
-    const result = await this.BoardRepository.updatePost(id, data);
+    const post = await this.Post.findById(id);
+    if (!post) return null;
+    const result = await post.updateOne({ $set: data });
     return result;
   };
 
   /* 게시글 삭제 */
   deletePost = async (id: string) => {
-    const result = await this.BoardRepository.deletePost(id);
+    const post = await this.Post.findById(id);
+    if (!post) return null;
+    const result = await post.deleteOne();
     return result;
   };
 }

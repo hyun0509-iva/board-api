@@ -1,16 +1,14 @@
 import { NextFunction, Request, Response, Router } from "express";
-import PostModel from "./board.model";
-import NotFoundException from "../../exceptions/notFoundException";
-import { Controller } from "interfaces/controller";
+import { Controller } from "@/interfaces/controller";
+import NotFoundException from "@/exceptions/notFoundException";
 import PostDto from "./dto/board.dto";
 import BoardService from "./board.service";
 
 class BoardController implements Controller {
-  private BoardService = new BoardService();
   public path: string = "/posts";
   public router: Router = Router();
 
-  constructor() {
+  constructor(private BoardService: BoardService) {
     this.initializeRoutes();
   }
 
@@ -45,7 +43,8 @@ class BoardController implements Controller {
     try {
       const result = await this.BoardService.getAllPosts();
       if (!result) {
-        return next(new NotFoundException());
+        return next(new NotFoundException
+          ());
       }
       res.status(200).json({ isOk: true, result });
     } catch (error) {
